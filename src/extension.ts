@@ -28,6 +28,33 @@ function SendToChatGPT(
   sel: vscode.Selection[]
 ) {
 
+  const uiLanguage = vscode.env.language;
+
+  let languagePrompts = {
+    projectName: "Project Name:",
+    filePath: "File Path:",
+    programmingLanguage: "Programming Language:",
+    codeContent: "Code Content as follows:"
+  };
+
+  if (uiLanguage === 'zh-tw') {
+    languagePrompts = {
+      projectName: "專案名稱:",
+      filePath: "檔案路徑:",
+      programmingLanguage: "程式語言:",
+      codeContent: "程式碼內容如下:"
+    };
+  }
+
+  if (uiLanguage === 'ja') {
+    languagePrompts = {
+      projectName: "プロジェクト名:",
+      filePath: "ファイルパス:",
+      programmingLanguage: "プログラミング言語:",
+      codeContent: "コード内容は以下の通りです:"
+    };
+  }
+
   for (var x = 0; x < sel.length; x++) {
     let txt: string = d.getText(new vscode.Range(sel[x].start, sel[x].end));
 
@@ -35,14 +62,13 @@ function SendToChatGPT(
 
     const workspaceName = vscode.workspace.name;
 
-    let prompt = `專案名稱: ${workspaceName}
-檔案路徑: ${relativePath}
-程式語言: ${d.languageId}
-程式碼內容如下:
+    let prompt = `${languagePrompts.projectName} ${workspaceName}
+${languagePrompts.filePath}: ${relativePath}
+${languagePrompts.programmingLanguage}: ${d.languageId}
+${languagePrompts.codeContent}:
 """
 ${txt}
 """`;
-
 
     logger.appendLine(`prompt: ${prompt}`);
     logger.appendLine('-------------------');
